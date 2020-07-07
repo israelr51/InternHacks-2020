@@ -8,8 +8,6 @@ import android.view.View;
 import android.widget.Button;
 
 import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
-import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
@@ -43,15 +41,6 @@ public class MainActivity extends AppCompatActivity {
                 openCalendar();
             }
         });
-//        try {
-//            CalendarQuickstart.main();
-//        } catch (IOException e) {
-//            System.out.println("uhoh");
-//            e.printStackTrace();
-//        } catch (GeneralSecurityException e) {
-//            System.out.println("HELP");
-//            e.printStackTrace();
-//        }
     }
     public void openCalendar(){
         Intent calendarintent = new Intent(this, Calendar.class);
