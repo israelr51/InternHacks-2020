@@ -34,16 +34,23 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        button = (Button) findViewById(R.id.CalendarButton);
-        button.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                openCalendar();
-            }
-        });
+        RecAlgorithm.insertFakeData();
+        RecAlgorithm.populateActivities();
+        RecAlgorithm.recommend();
+//        button = (Button) findViewById(R.id.CalendarButton);
+//        button.setOnClickListener(new View.OnClickListener(){
+//            @Override
+//            public void onClick(View view) {
+//                openCalendar();
+//            }
+//        });
+
     }
-    public void openCalendar(){
-        Intent calendarintent = new Intent(this, Calendar.class);
-        startActivity(calendarintent);
-    }
+//    public void openCalendar(){
+//        Intent calendarintent = new Intent(this, Calendar.class);
+//        startActivity(calendarintent);
+//        RecAlgorithm.insertFakeData();
+//        RecAlgorithm.populateActivities();
+//        RecAlgorithm.recommend();
+//    }
 }
