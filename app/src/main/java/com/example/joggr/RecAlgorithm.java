@@ -44,7 +44,7 @@ public class RecAlgorithm {
     }
     static List<String> events;
     public static void processCalendarInformation(){
-         events = Calendar.events;
+//         events = Calendar.events;
          //System.out.println("here" + events.get(1));
     }
 
@@ -53,6 +53,8 @@ public class RecAlgorithm {
 
     public static void insertFakeData(){
                         //event name, start,end, date
+        //fakeData.add(new CalEvents("meeting 12", null, null, "07-09-2020"));
+        fakeData.add(new CalEvents("meeting 11", "17:45:00", "18:30:00", "07-09-2020"));
         fakeData.add(new CalEvents("meeting 1", "09:30:00", "10:30:00", "07-10-2020"));
         fakeData.add(new CalEvents("meeting 2", "14:30:00", "15:30:00", "07-10-2020"));
         fakeData.add(new CalEvents("meeting 3", "17:30:00", "17:45:00", "07-10-2020"));
@@ -91,6 +93,10 @@ public class RecAlgorithm {
           }
           return filtered;
     };
+//
+//    public static boolean isThisAllDay(){
+//        return true;
+//    }
     public static void printRec (List<CalEvents> curate){
         System.out.println("printing REc");
         for(CalEvents act : curate){
@@ -128,9 +134,15 @@ public class RecAlgorithm {
         int nextindex = 0;
         System.out.println(fakeData.size());
         for(int i = 0; i < fakeData.size(); ){
-            System.out.println("IM HERE");
+
 
             CalEvents curevent = fakeData.get(i);
+            while(curevent.start_time == null  && curevent.end_time == null){
+                System.out.println("IM HERE");
+                i++;
+                nextindex = i;
+                curevent = fakeData.get(i);
+            }
             CalEvents nextevent = fakeData.get(nextindex);
 
             Date curEventST = new Date();
@@ -142,9 +154,9 @@ public class RecAlgorithm {
                 SimpleDateFormat timeformatter = new SimpleDateFormat("HH:mm:ss");
                 timeformatter.setTimeZone(TimeZone.getTimeZone("GMT"));
                 curEventET = timeformatter.parse(curevent.end_time);
-                System.out.println("ET" + curEventET);
+               // System.out.println("ET" + curEventET);
                 curEventST = timeformatter.parse(curevent.start_time);
-                System.out.println("sT" + curEventST);
+               // System.out.println("sT" + curEventST);
                 recST = timeformatter.parse(recommendStartTime);
                 recET = timeformatter.parse(recommendEndTime);
 
@@ -181,7 +193,7 @@ public class RecAlgorithm {
 
                 }
 
-                if ((nexteventST.after(recST) && nexteventST.before(recET)) && (nexteventET.after(recST) && nexteventET.before(recET))) {
+                if (((nexteventST.after(recST) && nexteventST.before(recET)) && (nexteventET.after(recST) && nexteventET.before(recET))) || nexteventET.equals(recST) || nexteventST.equals(recET)) {
                     System.out.println("adding day event "+ fakeData.get(nextindex).name);
                     dayEvents.add(fakeData.get(nextindex));
 
@@ -224,22 +236,33 @@ public class RecAlgorithm {
                         timeformatter.setTimeZone(TimeZone.getTimeZone("GMT"));
                         prevEventST= timeformatter.parse(prevEvent.start_time);
                         prevEventET = timeformatter.parse(prevEvent.end_time);
-                        System.out.println("conversion prevEventET.getTime() "+ prevEventET.getTime());
+                //        System.out.println("conversion prevEventET.getTime() "+ prevEventET.getTime());
                         eventNowET = timeformatter.parse(eventNow.end_time);
+                        System.out.println("Event NOW name : "+eventNow.name);
                         eventNowST = timeformatter.parse(eventNow.start_time);
+                        System.out.println("EveNT NOW START: "+eventNowST);
                     }
                     catch(ParseException e){
                         e.printStackTrace();
                     }
+                    System.out.println("recET: "+recET);
+                    System.out.println("eventnowST: "+eventNowST);
+                    System.out.println("prevEventET: "+prevEventET);
+                    if(dayEvents.size() > 1 && (eventNowET.equals(recST))){
+                        continue;
+                    }
                     //if we are at the beginning of the day, we include recommended start time
-                    if(j == 0 ) {
+                    if(j == 0 && eventNowST.after(recST)) {
                         System.out.println(recST.getTime());
                         System.out.println(eventNowST.getTime());
                         prevEventET = recST;
                         DurationEvent = Math.abs(recST.getTime() - eventNowST.getTime());
                         buffer = bufferTime*2;
                     }
-                    else if(j == dayEvents.size()){
+                    else if ( j == dayEvents.size() && eventNowST.equals(recET)){
+                        continue;
+                    }
+                    else if(j == dayEvents.size() ){
                         DurationEvent = Math.abs(recET.getTime() - eventNowET.getTime());
                         buffer = bufferTime*2;
                     }
@@ -290,6 +313,7 @@ public class RecAlgorithm {
                             System.out.println("ACTIVITY START AT "+startTime);
                             curatedActivities.add(new CalEvents(curactivity.name, startTime, endTime, eventNow.date_of_event ));
                         }
+                        if(dayEvents.size()==1 && (eventNowET.equals(recST) || eventNowST.equals(recET)))break;
                     }
                     prevEvent = eventNow;
                 }
